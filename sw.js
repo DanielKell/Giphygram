@@ -20,3 +20,17 @@ self.addEventListener( 'install', e => {
             .then( cache => cache.addAll(appAssets))
     )
 })
+
+//SW Activate
+self.addEventListener( 'activate', e => {
+    //Clean static cache
+    let cleaned = caches.keys().then(keys => {
+        keys.forEach( key => {
+            if (key !== `static-$(version)` && key.match('static-') ) {
+                return caches.delete(key)
+            }
+        })
+    })
+
+    e.waitUntil(cleaned)
+})

@@ -23,7 +23,7 @@ self.addEventListener( 'install', e => {
 
 //SW Activate
 self.addEventListener( 'activate', e => {
-    //Clean static cache
+    //Clean static cache if a version is outdated
     let cleaned = caches.keys().then(keys => {
         keys.forEach( key => {
             if (key !== `static-$(version)` && key.match('static-') ) {
@@ -33,4 +33,34 @@ self.addEventListener( 'activate', e => {
     })
 
     e.waitUntil(cleaned)
+})
+
+//Static cache strategy - Cache with Network Fallback
+
+const staticCache = (req) => {
+    return caches.match(req).then( cachedRes => {
+
+        if(cachedRes) return cachedRes;
+
+        //Fallback to network
+        return fetch(req).then ( networkRes => {
+            
+            //Update cache with new response
+            caches.open(`static-$(version)`)
+                .then( cache => cache.put ( req, networkRes ));
+
+            //Return Clone of Network Response
+            return networkRes.clone();
+        })
+    })
+}
+
+//SW Fetch
+
+self.addEventListener('fetch', e => {
+    //App Shell
+
+    if(e.request.url.match(location.origin) ) {
+        e.respondWith( staticCache(e.request));
+    }
 })

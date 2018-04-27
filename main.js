@@ -1,4 +1,11 @@
 
+//Porgressive Enhancement
+if (navigator.serviceWorker) {
+
+    //Register SW
+    navigator.serviceWorker.register('sw.js').catch(console.error)
+}
+
 // Giphy API object
 var giphy = {
     url: 'https://api.giphy.com/v1/gifs/trending',

@@ -1,5 +1,5 @@
 // Service Worker Version
-const version = "1.0";
+const version = "1.1";
 
 //Static Chache - App Shell
 const appAssets = [
@@ -46,7 +46,7 @@ const staticCache = (req) => {
         return fetch(req).then ( networkRes => {
             
             //Update cache with new response
-            caches.open(`static-$(version)`)
+            caches.open(`static-${version}`)
                 .then( cache => cache.put ( req, networkRes ));
 
             //Return Clone of Network Response

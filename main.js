@@ -6,6 +6,16 @@ if (navigator.serviceWorker) {
     navigator.serviceWorker.register('sw.js').catch(console.error)
 }
 
+    // Giphy Cache Clean
+    function giphyCacheClean(giphys) {
+
+        //get service worker registration
+        navigator.serviceWorker.getRegistration().then(function(reg){
+            //Only post message to active SW
+            if (reg.active) reg.active.postMessage({ action: 'cleanGiphyCache', giphys:giphys})
+        })
+    }
+
 // Giphy API object
 var giphy = {
     url: 'https://api.giphy.com/v1/gifs/trending',
@@ -30,8 +40,14 @@ function update() {
             // Empty Element
             $('#giphys').empty();
 
+            // Populate array of latest Giphys
+            var latestGiphys = [];
+
             // Loop Giphys
             $.each( res.data, function (i, giphy) {
+
+                // Add to latest Giphys
+                latestGiphys.push(giphy.images.downsized_large.url);
 
                 // Add Giphy HTML
                 $('#giphys').prepend(
@@ -40,6 +56,7 @@ function update() {
                     '</div>'
                 );
             });
+            if (navigator.serviceWorker) giphyCacheClean(latestGiphys);
         })
 
         // Failure

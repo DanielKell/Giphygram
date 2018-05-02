@@ -1,5 +1,5 @@
 // Service Worker Version
-const version = "1.1";
+const version = "1.2";
 
 //Static Chache - App Shell
 const appAssets = [
@@ -99,4 +99,9 @@ self.addEventListener('fetch', e => {
     } else if (e.request.url.match('giphy.com/media')) {
         e.respondWith( staticCache(e.request, 'giphy'))
     }
-})
+});
+
+// Listen for message from client
+self.addEventListener('message', e => {
+    if (e.data.action === 'cleanGiphyCache' ) cleanGiphyCache(e.data.giphys)
+});

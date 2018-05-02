@@ -74,6 +74,18 @@ const fallbackCache = (req) => {
     .catch (err => caches.match(req));
 }
 
+//Clean old Giphys from the 'giphy' cache
+const cleanGiphyCache = (giphys) => {
+    caches.open('giphy').then( cache => {
+        //Get all cache entries
+        cache.keys().then( keys => {
+            keys.forEach( key => {
+                if (!giphys.includes(key.url)) cache.delete(key);
+            })
+        })
+    })
+}
+
 
 //SW Fetch
 
